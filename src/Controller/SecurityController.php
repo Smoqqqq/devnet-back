@@ -69,8 +69,6 @@ class SecurityController extends AbstractController
 
         $decrypted = $authService->decrypt($token);
 
-        dd($token, $decrypted);
-
         return $this->json([
             "success" => true,
             "message" => "Connexion réussit",
