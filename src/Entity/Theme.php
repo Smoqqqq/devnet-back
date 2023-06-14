@@ -2,15 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\ThemeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ThemeRepository;
 use ApiPlatform\Metadata\ApiResource;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ApiResource()]
 #[ORM\Entity(repositoryClass: ThemeRepository::class)]
-#[UniqueEntity('title', 'Il en existe déjà un')]
+#[UniqueEntity('title', 'Ce thème existe déjà')]
 class Theme
 {
     #[ORM\Id]
@@ -20,10 +21,6 @@ class Theme
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
-
-    #[ORM\ManyToOne(inversedBy: 'themes')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $User = null;
 
     #[ORM\OneToMany(mappedBy: 'Theme', targetEntity: Category::class)]
     private Collection $categories;
@@ -46,18 +43,6 @@ class Theme
     public function setTitle(string $title): static
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->User;
-    }
-
-    public function setUser(?User $User): static
-    {
-        $this->User = $User;
 
         return $this;
     }

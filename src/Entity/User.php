@@ -2,16 +2,26 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\Get;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\Controller\AccountController;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use ApiPlatform\Metadata\ApiResource;
 
-#[ApiResource()]
+#[ApiResource(operations: [
+    new GetCollection(
+        name: "app_current_user_read",
+        uriTemplate: "/user/account",
+        controller: AccountController::class,
+    ),
+    new Get()
+])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity('email', 'Il existe déjà un utilisateur avec cet email.')]
@@ -40,20 +50,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $username = null;
 
-    #[ORM\OneToMany(mappedBy: 'User', targetEntity: Category::class, orphanRemoval: true)]
-    private Collection $categories;
-
-    #[ORM\OneToMany(mappedBy: 'User', targetEntity: Theme::class, orphanRemoval: true)]
-    private Collection $themes;
-
     #[ORM\OneToMany(mappedBy: 'User', targetEntity: Comment::class)]
     private Collection $comments;
 
     public function __construct()
     {
         $this->posts = new ArrayCollection();
-        $this->categories = new ArrayCollection();
-        $this->themes = new ArrayCollection();
         $this->comments = new ArrayCollection();
     }
 
@@ -165,66 +167,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUsername(string $username): static
     {
         $this->username = $username;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Category>
-     */
-    public function getCategories(): Collection
-    {
-        return $this->categories;
-    }
-
-    public function addCategory(Category $category): static
-    {
-        if (!$this->categories->contains($category)) {
-            $this->categories->add($category);
-            $category->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCategory(Category $category): static
-    {
-        if ($this->categories->removeElement($category)) {
-            // set the owning side to null (unless already changed)
-            if ($category->getUser() === $this) {
-                $category->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Theme>
-     */
-    public function getThemes(): Collection
-    {
-        return $this->themes;
-    }
-
-    public function addTheme(Theme $theme): static
-    {
-        if (!$this->themes->contains($theme)) {
-            $this->themes->add($theme);
-            $theme->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTheme(Theme $theme): static
-    {
-        if ($this->themes->removeElement($theme)) {
-            // set the owning side to null (unless already changed)
-            if ($theme->getUser() === $this) {
-                $theme->setUser(null);
-            }
-        }
 
         return $this;
     }

@@ -2,15 +2,27 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use DateTimeImmutable;
+use ApiPlatform\Metadata\Get;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PostRepository;
 use ApiPlatform\Metadata\ApiResource;
-use DateTimeImmutable;
+use ApiPlatform\Metadata\GetCollection;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\Post as PostOperation;
+use App\Controller\CreatePostController;
+use Doctrine\Common\Collections\ArrayCollection;
 
-#[ApiResource()]
+#[ApiResource(operations: [
+    new PostOperation(
+        name: "app_post_create",
+        uriTemplate: "/posts",
+        controller: CreatePostController::class
+    ),
+    new Get(),
+    new GetCollection()
+])]
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {

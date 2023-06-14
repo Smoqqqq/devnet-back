@@ -32,6 +32,7 @@ class SecurityController extends AbstractController
     {
         $email = $request->request->get("email");
         $password = $request->request->get("password");
+        $duration = $request->request->get("remember_me") ? "P10D" : "P1D";
 
         /** @var PasswordAuthenticatedUserInterface */
         $user = $userRepository->findOneBy(["email" => $email]);
@@ -60,14 +61,16 @@ class SecurityController extends AbstractController
 
         $roles = implode('', $user->getRoles());
         $expire = new DateTime();
-        $oneDayInterval = new DateInterval("P1D");
+        $oneDayInterval = new DateInterval($duration);
         $expire->add($oneDayInterval);
 
-        $data = "roles={$roles}&id={$user->getId()}&expire={$expire->format("d/m/y h:i")}";
+        $data = [
+            "roles" => $roles,
+            "id" => $user->getId(),
+            "expire" => $expire->format("d/m/y h:i")
+        ];
 
         $token = $authService->encrypt($data);
-
-        $decrypted = $authService->decrypt($token);
 
         return $this->json([
             "success" => true,
@@ -108,7 +111,8 @@ class SecurityController extends AbstractController
         } catch (\Exception $e) {
             return $this->json([
                 "success" => false,
-                "message" => "Une erreur c'est produite."
+                "message" => "Une erreur c'est produite.",
+                "error" => $e->getMessage()
             ]);
         }
 
@@ -116,5 +120,47 @@ class SecurityController extends AbstractController
             "success" => true,
             "message" => "Compte crée"
         ]);
+    }
+
+    #[Route("/check-auth", name: "app_user_check_auth")]
+    public function checkAuth(Request $request, AuthService $authService, UserRepository $userRepository) {
+        $token = $request->query->get("token");
+
+        if (!$token) {
+            return $this->json([
+                "success" => false,
+                "message" => "Veuillez renseigner un token dans les paramètres GET"
+            ]);
+        }
+
+        $decrypted = $authService->decrypt($token);
+        $now = new DateTime();
+
+        if ($now->format("d/m/y H:i") > $decrypted["expire"]) {
+            return $this->json([
+                "success" => false,
+                "message" => "La connexion à expiré, veuillez vous connecter à nouveau"
+            ]);
+        }
+
+        $user = $userRepository->find($decrypted["id"]);
+
+        if (!$user) {
+            return $this->json([
+                "success" => false,
+                "message" => "Token invalide : utilisateur inconnu."
+            ]);
+        }
+
+        return $this->json([
+            "success" => true,
+            "message" => "OK",
+            "user" => $user
+        ]);
+    }
+
+    #[Route("/test")]
+    public function test(AuthService $authService, Request $request) {
+        dd($authService->getUserFromRequest($request));
     }
 }
