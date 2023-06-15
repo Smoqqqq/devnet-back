@@ -65,17 +65,19 @@ class SecurityController extends AbstractController
         $expire->add($oneDayInterval);
 
         $data = [
-            "roles" => $roles,
+            // "roles" => $roles, // Supprimé car crée un problème lors de la sérialisation, c'est pas nécessaire car on à déjà l'id
             "id" => $user->getId(),
-            "expire" => $expire->format("d/m/y h:i")
+            "expire" => $expire->format("d/m/Y H:i")
         ];
 
+        
         $token = $authService->encrypt($data);
 
         return $this->json([
             "success" => true,
             "message" => "Connexion réussit",
-            "token" => $token
+            "token" => $token,
+            "userId" => $user->getId()
         ]);
     }
 
@@ -124,7 +126,7 @@ class SecurityController extends AbstractController
 
     #[Route("/check-auth", name: "app_user_check_auth")]
     public function checkAuth(Request $request, AuthService $authService, UserRepository $userRepository) {
-        $token = $request->query->get("token");
+        $token = $request->request->get("token");
 
         if (!$token) {
             return $this->json([
