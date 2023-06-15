@@ -51,26 +51,19 @@ class SecurityController extends AbstractController
             ]);
         }
 
-        /** @var UserInterface */
-        $user = $user;
-
         $security->login($user);
 
-        /** @var User */
-        $user = $user;
-
-        $roles = implode('', $user->getRoles());
+        $roles = $user->getRoles()[0];
         $expire = new DateTime();
         $oneDayInterval = new DateInterval($duration);
         $expire->add($oneDayInterval);
 
         $data = [
-            // "roles" => $roles, // Supprimé car crée un problème lors de la sérialisation, c'est pas nécessaire car on à déjà l'id
+            "role" => $roles,
             "id" => $user->getId(),
             "expire" => $expire->format("d/m/Y H:i")
         ];
 
-        
         $token = $authService->encrypt($data);
 
         return $this->json([
@@ -97,7 +90,7 @@ class SecurityController extends AbstractController
         $user = new User();
         $user->setEmail($email)
             ->setUsername($username)
-            ->setRoles(["ROLE_USER"])
+            ->setRoles(User::USER_ROLES['USER'])
             ->setPassword($hasher->hashPassword($user, $password));
 
         $em = $doctrine->getManager();
@@ -125,7 +118,8 @@ class SecurityController extends AbstractController
     }
 
     #[Route("/check-auth", name: "app_user_check_auth")]
-    public function checkAuth(Request $request, AuthService $authService, UserRepository $userRepository) {
+    public function checkAuth(Request $request, AuthService $authService, UserRepository $userRepository)
+    {
         $token = $request->request->get("token");
 
         if (!$token) {
@@ -162,7 +156,8 @@ class SecurityController extends AbstractController
     }
 
     #[Route("/test")]
-    public function test(AuthService $authService, Request $request) {
+    public function test(AuthService $authService, Request $request)
+    {
         dd($authService->getUserFromRequest($request));
     }
 }

@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Webmozart\Assert\InvalidArgumentException;
 
 #[ApiResource(operations: [
     new GetCollection(
@@ -27,6 +28,11 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[UniqueEntity('email', 'Il existe déjà un utilisateur avec cet email.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const USER_ROLES = [
+        "USER" => "ROLE_USER",
+        "ADMIN" => "ROLE_ADMIN"
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -36,7 +42,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column]
-    private array $roles = [];
+    private ?string $roles = '';
 
     /**
      * @var string The hashed password
@@ -95,16 +101,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
+        $role = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        if ($role === '' || $role === self::USER_ROLES['USER']) {
+            return [self::USER_ROLES['USER']];
+        }
+        return [self::USER_ROLES['ADMIN']];
     }
 
-    public function setRoles(array $roles): static
+    public function setRoles(string $role): static
     {
-        $this->roles = $roles;
+        if (!in_array($role, self::USER_ROLES, true)) {
+            throw new InvalidArgumentException(sprintf('Invalid role "%s".', $role));
+        }
+        $this->roles = array_search($role, self::USER_ROLES);
 
         return $this;
     }
