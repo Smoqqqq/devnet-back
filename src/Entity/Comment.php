@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use App\Repository\CommentRepository;
-use ApiPlatform\Metadata\GetCollection;
 use App\Controller\CreateCommentController;
 use ApiPlatform\Metadata\Post as PostOperation;
 

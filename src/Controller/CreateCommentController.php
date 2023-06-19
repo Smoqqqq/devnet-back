@@ -37,7 +37,15 @@ class CreateCommentController extends AbstractController
 
         return $this->json([
             "success" => true,
-            "message" => "Commentaire enregistré."
+            "message" => "Commentaire enregistré.",
+            "data" => [
+                "content" => $comment->getContent(),
+                "createdAt" => $comment->getCreatedAt(),
+                "author" => [
+                    "username" => $user->getUsername(),
+                    "id" => $user->getId()
+                ]
+            ]
         ]);
     }
 }

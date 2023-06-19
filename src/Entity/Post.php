@@ -13,6 +13,7 @@ use App\Controller\CreatePostController;
 use App\Controller\GetPostLikesController;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\Post as PostOperation;
+use App\Controller\PostCommentsController;
 use Doctrine\Common\Collections\ArrayCollection;
 
 #[ApiResource(operations: [
@@ -27,6 +28,10 @@ use Doctrine\Common\Collections\ArrayCollection;
         uriTemplate: "/post/likes/{id}",
         controller: GetPostLikesController::class,
         description: "Get likes for a given post"
+    ),
+    new Get(
+        uriTemplate: "/post/{id}/comments",
+        controller: PostCommentsController::class
     )
 ])]
 #[ORM\Entity(repositoryClass: PostRepository::class)]
