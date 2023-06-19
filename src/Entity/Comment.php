@@ -2,13 +2,25 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use App\Repository\CommentRepository;
 use DateTimeImmutable;
+use ApiPlatform\Metadata\Get;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use App\Repository\CommentRepository;
+use ApiPlatform\Metadata\GetCollection;
+use App\Controller\CreateCommentController;
+use ApiPlatform\Metadata\Post as PostOperation;
 
-#[ApiResource]
+#[ApiResource(operations: [
+    new PostOperation(
+        uriTemplate: "/comments",
+        controller: CreateCommentController::class
+    ),
+    new Get(),
+    new Delete()
+])]
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
 {
@@ -25,7 +37,6 @@ class Comment
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     private ?User $User = null;
-
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
@@ -72,18 +83,6 @@ class Comment
     public function setUser(?User $User): static
     {
         $this->User = $User;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }
