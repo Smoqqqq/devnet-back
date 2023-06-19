@@ -22,7 +22,23 @@ class AppFixtures extends Fixture
 
         $user = new User();
         $user->setEmail("paul@bhgroupe.fr")
-            ->setUsername("Smoq")
+            ->setUsername("Paul")
+            ->setRoles(["ROLE_USER"])
+            ->setPassword($this->hasher->hashPassword($user, "test"));
+
+        $manager->persist($user);
+
+        $user = new User();
+        $user->setEmail("rz@gmail.com")
+            ->setUsername("Romain")
+            ->setRoles(["ROLE_USER"])
+            ->setPassword($this->hasher->hashPassword($user, "test"));
+
+        $manager->persist($user);
+
+        $user = new User();
+        $user->setEmail("admin@admin.net")
+            ->setUsername("Mathieu")
             ->setRoles(["ROLE_USER"])
             ->setPassword($this->hasher->hashPassword($user, "test"));
 
