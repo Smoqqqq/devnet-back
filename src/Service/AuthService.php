@@ -38,7 +38,7 @@ class AuthService {
         $decrypted = $this->decrypt($token);
         $now = new DateTime();
 
-        if ($now->format("d/m/y H:i") > $decrypted["expire"]) {
+        if ($now->getTimestamp() > $decrypted["expire"]) {
             return false;
         }
 
