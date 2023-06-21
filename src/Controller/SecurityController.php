@@ -98,7 +98,8 @@ class SecurityController extends AbstractController
         $user->setEmail($email)
             ->setUsername($username)
             ->setRoles(["ROLE_USER"])
-            ->setPassword($hasher->hashPassword($user, $password));
+            ->setPassword($hasher->hashPassword($user, $password))
+            ->SetAvatar('');
 
         $em = $doctrine->getManager();
 
