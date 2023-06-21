@@ -16,6 +16,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use App\Controller\UpdateUserController;
 use App\Controller\GetUserById;
+use App\Controller\GetPostFromUserId;
 #[ApiResource(
     operations: [
     new GetCollection(
@@ -33,6 +34,11 @@ use App\Controller\GetUserById;
         name: "app_user_read_by_id",
         uriTemplate: "/user/{id}",
         controller: GetUserById::class,
+    ),
+    new Get(
+        name: "app_user_post_by_id",
+        uriTemplate: "/user/{id}/posts",
+        controller: GetPostFromUserId::class,
     )
 ])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
