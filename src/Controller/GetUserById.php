@@ -37,6 +37,7 @@ class GetUserById extends AbstractController
             'posts' => $user->getPosts(),
             'comments' => $user->getComments(),
             'description' => $user->getDescription(),
+            'avatar' => $user->getAvatar(),
         ];
 
         return $this->json([
