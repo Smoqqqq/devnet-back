@@ -67,7 +67,7 @@ class SecurityController extends AbstractController
         $data = [
             // "roles" => $roles, // Supprimé car crée un problème lors de la sérialisation, c'est pas nécessaire car on à déjà l'id
             "id" => $user->getId(),
-            "expire" => $expire->format("d/m/Y H:i")
+            "expire" => $expire->getTimestamp()
         ];
 
         
@@ -138,10 +138,10 @@ class SecurityController extends AbstractController
         $decrypted = $authService->decrypt($token);
         $now = new DateTime();
 
-        if ($now->format("d/m/y H:i") > $decrypted["expire"]) {
+        if ($now->getTimestamp() > $decrypted["expire"]) {
             return $this->json([
                 "success" => false,
-                "message" => "La connexion à expiré, veuillez vous connecter à nouveau"
+                "message" => "La connexion à expiré, veuillez vous connecter à nouveau",
             ]);
         }
 
