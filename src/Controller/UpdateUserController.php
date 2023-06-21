@@ -40,6 +40,7 @@ class UpdateUserController
         $email = $data['email'] ?? null;
         $username = $data['username'] ?? null;
         $avatar = $data['avatar'] ?? null;
+        $description = $data['description'] ?? null;
 
         if (!$this->passwordEncoder->isPasswordValid($user, $currentPassword)) {
             return new JsonResponse([
@@ -62,6 +63,9 @@ class UpdateUserController
 
         if ($avatar && $avatar !== $user->getAvatar()) {
             $user->setAvatar($avatar);
+        }
+        if ($description && $description !== $user->getDescription()) {
+            $user->setDescription($description);
         }
 
         $this->entityManager->persist($user);

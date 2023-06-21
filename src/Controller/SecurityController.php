@@ -99,7 +99,8 @@ class SecurityController extends AbstractController
             ->setUsername($username)
             ->setRoles(["ROLE_USER"])
             ->setPassword($hasher->hashPassword($user, $password))
-            ->SetAvatar('');
+            ->SetAvatar('https://scontent-cdg4-1.xx.fbcdn.net/v/t1.6435-9/180978949_314228950059549_1005358403722529104_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=BVsnxwGklC4AX8zc3-b&_nc_ht=scontent-cdg4-1.xx&oh=00_AfBOXLRUaSMMu4RIWFFpy-n-50KrbKVOWEsspBGSO6YX8Q&oe=64BA4B8E')
+            ->SetDescription('');
 
         $em = $doctrine->getManager();
 

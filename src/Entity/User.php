@@ -15,8 +15,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use App\Controller\UpdateUserController;
-
-#[ApiResource(operations: [
+use App\Controller\GetUserById;
+#[ApiResource(
+    operations: [
     new GetCollection(
         name: "app_current_user_read",
         uriTemplate: "/user/account",
@@ -27,6 +28,11 @@ use App\Controller\UpdateUserController;
         name: "app_current_user_update",
         uriTemplate: "/user/update",
         controller: UpdateUserController::class,
+    ),
+    new Get(
+        name: "app_user_read_by_id",
+        uriTemplate: "/user/{id}",
+        controller: GetUserById::class,
     )
 ])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -63,8 +69,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Like::class, orphanRemoval: true)]
     private Collection $likes;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 999)]
     private ?string $avatar = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
 
     public function __construct()
     {
@@ -253,6 +262,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAvatar(string $avatar): static
     {
         $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
