@@ -15,6 +15,8 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\Post as PostOperation;
 use App\Controller\PostCommentsController;
 use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Metadata\Put;
+use App\Controller\UpdatePostController;
 
 #[ApiResource(operations: [
     new PostOperation(
@@ -32,6 +34,11 @@ use Doctrine\Common\Collections\ArrayCollection;
     new Get(
         uriTemplate: "/post/{id}/comments",
         controller: PostCommentsController::class
+    ),
+    new Put(
+        name: "app_post_update",
+        uriTemplate:'/post/{id}',
+        controller: UpdatePostController::class
     )
 ])]
 #[ORM\Entity(repositoryClass: PostRepository::class)]

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Metadata\ApiResource;
@@ -13,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Controller\UpdateUserController;
 
 #[ApiResource(operations: [
     new GetCollection(
@@ -20,7 +22,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         uriTemplate: "/user/account",
         controller: AccountController::class,
     ),
-    new Get()
+    new Get(),
+    new Put(
+        name: "app_current_user_update",
+        uriTemplate: "/user/update",
+        controller: UpdateUserController::class,
+    )
 ])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -55,6 +62,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Like::class, orphanRemoval: true)]
     private Collection $likes;
+
+    #[ORM\Column(length: 255)]
+    private ?string $avatar = null;
 
     public function __construct()
     {
@@ -231,6 +241,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $like->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(string $avatar): static
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }

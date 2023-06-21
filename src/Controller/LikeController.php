@@ -16,6 +16,13 @@ class LikeController extends AbstractController
     {
         $user = $authService->getUserFromRequest($request);
 
+        if (!$user) {
+            return $this->json([
+                "success" => false,
+                "message" => "User is not authenticated."
+            ], 401);
+        }
+
         $like = $likeRepository->findOneBy(["user" => $user, "post" => $post]);
 
         return $this->json($like);
