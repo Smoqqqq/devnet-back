@@ -71,12 +71,16 @@ class Post
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Like::class, orphanRemoval: true)]
     private Collection $likes;
 
+    #[ORM\OneToMany(mappedBy: 'reportedPost', targetEntity: Reports::class, orphanRemoval: true)]
+    private Collection $reports;
+
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
         $this->categories = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
+        $this->reports = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -213,6 +217,36 @@ class Post
             // set the owning side to null (unless already changed)
             if ($like->getPost() === $this) {
                 $like->setPost(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reports>
+     */
+    public function getReports(): Collection
+    {
+        return $this->reports;
+    }
+
+    public function addReport(Reports $report): static
+    {
+        if (!$this->reports->contains($report)) {
+            $this->reports->add($report);
+            $report->setReportedPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReport(Reports $report): static
+    {
+        if ($this->reports->removeElement($report)) {
+            // set the owning side to null (unless already changed)
+            if ($report->getReportedPost() === $this) {
+                $report->setReportedPost(null);
             }
         }
 

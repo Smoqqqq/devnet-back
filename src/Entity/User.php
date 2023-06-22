@@ -75,17 +75,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Like::class, orphanRemoval: true)]
     private Collection $likes;
 
-    #[ORM\Column(length: 999)]
+    #[ORM\Column(length: 255)]
     private ?string $avatar = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
+
+    #[ORM\OneToMany(mappedBy: 'reporter', targetEntity: Reports::class, orphanRemoval: true)]
+    private Collection $reports;
 
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
+        $this->reports = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -280,6 +284,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reports>
+     */
+    public function getReports(): Collection
+    {
+        return $this->reports;
+    }
+
+    public function addReport(Reports $report): static
+    {
+        if (!$this->reports->contains($report)) {
+            $this->reports->add($report);
+            $report->setReporter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReport(Reports $report): static
+    {
+        if ($this->reports->removeElement($report)) {
+            // set the owning side to null (unless already changed)
+            if ($report->getReporter() === $this) {
+                $report->setReporter(null);
+            }
+        }
 
         return $this;
     }
