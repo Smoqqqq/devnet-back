@@ -17,6 +17,9 @@ use App\Controller\PostCommentsController;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Metadata\Put;
 use App\Controller\UpdatePostController;
+use App\Controller\ReportPostController;
+use ApiPlatform\Metadata\Delete;
+use App\Controller\DeletePostController;
 
 #[ApiResource(operations: [
     new PostOperation(
@@ -39,6 +42,16 @@ use App\Controller\UpdatePostController;
         name: "app_post_update",
         uriTemplate:'/post/{id}',
         controller: UpdatePostController::class
+    ),
+    new PostOperation(
+        name: 'app_report_post',
+        uriTemplate: '/post/report/{id}',
+        controller: ReportPostController::class
+    ),
+    new Delete(
+        name: 'app_delete_post',
+        uriTemplate: '/post/{id}',
+        controller: DeletePostController::class
     )
 ])]
 #[ORM\Entity(repositoryClass: PostRepository::class)]

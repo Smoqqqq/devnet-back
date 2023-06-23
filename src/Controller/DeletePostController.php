@@ -14,11 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
 
 #[AsController]
-class UpdatePostController extends AbstractController
+class DeletePostController extends AbstractController
 {
     public function __construct(private ManagerRegistry $doctrine, private Security $security)
     {
     }
+
     public function __invoke(Request $request, AuthService $authService, RequestTransformer $requestTransformer, int $id): JsonResponse
     {
         $user = $authService->getUserFromRequest($request);
@@ -28,19 +29,6 @@ class UpdatePostController extends AbstractController
                 "success" => false,
                 "message" => "Vous devez être connecté."
             ], 401);
-        }
-
-        $requestContent = $requestTransformer->getRequestContent($request);
-
-        $content = $requestContent['content'] ?? null;
-        $title = $requestContent['title'] ?? null;
-
-
-        if (!$content || !$title) {
-            return $this->json([
-                "success" => false,
-                "message" => "Des données sont manquantes, veuillez remplir le titre et le contenu du post."
-            ], 400);
         }
 
         $em = $this->doctrine->getManager();
@@ -56,19 +44,16 @@ class UpdatePostController extends AbstractController
         if ($post->getAuthor() !== $user && !$this->isGranted('ROLE_ADMIN')) {
             return $this->json([
                 "success" => false,
-                "message" => "Vous n'êtes pas autorisé à modifier ce post."
+                "message" => "Vous n'êtes pas autorisé à supprimer ce post."
             ], 403);
         }
 
-        $post->setContent($content)
-            ->setTitle($title);
-
+        $em->remove($post);
         $em->flush();
 
         return $this->json([
             "success" => true,
-            "message" => "Post mis à jour.",
-            "data" => $post
+            "message" => "Post supprimé."
         ]);
     }
 }

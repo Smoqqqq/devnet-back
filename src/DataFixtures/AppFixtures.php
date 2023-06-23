@@ -23,6 +23,7 @@ class AppFixtures extends Fixture
         $user = new User();
         $user->setEmail("paul@bhgroupe.fr")
             ->setUsername("Paul")
+            ->setAvatar('')
             ->setRoles(["ROLE_USER"])
             ->setPassword($this->hasher->hashPassword($user, "test"));
 
@@ -31,6 +32,7 @@ class AppFixtures extends Fixture
         $user = new User();
         $user->setEmail("rz@gmail.com")
             ->setUsername("Romain")
+            ->setAvatar('')
             ->setRoles(["ROLE_USER"])
             ->setPassword($this->hasher->hashPassword($user, "test"));
 
@@ -38,6 +40,7 @@ class AppFixtures extends Fixture
 
         $user = new User();
         $user->setEmail("admin@admin.net")
+            ->setAvatar('')
             ->setUsername("Mathieu")
             ->setRoles(["ROLE_USER"])
             ->setPassword($this->hasher->hashPassword($user, "test"));

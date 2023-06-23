@@ -26,6 +26,7 @@ class SearchController extends AbstractController
         foreach ($users as $user) {
             $userResponse[] = [
                 'username' => $user->getUsername(),
+                'id' => $user->getId(),
                 'avatar' => $user->getAvatar(),
                 'description' => $user->getDescription(),
                 'Nbcomments' => count($user->getComments()),

@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Put;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Metadata\ApiResource;
@@ -16,6 +14,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use App\Controller\UpdateUserController;
 use App\Controller\GetUserById;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Get;
 use App\Controller\GetPostFromUserId;
 #[ApiResource(
     operations: [
